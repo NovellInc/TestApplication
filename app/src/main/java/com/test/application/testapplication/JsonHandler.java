@@ -1,30 +1,46 @@
 package com.test.application.testapplication;
 
+import android.content.Context;
+import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.ListView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 
 /**
  * Класс для работы с JSON данными.
  */
-public class JsonHandler {
+public class JsonHandler extends AsyncTask<URL, Void, ArrayList<QueryResult>> {
+
+    private ListView view;
+
+    public JsonHandler(ListView view) {
+        this.view = view;
+    }
 
     /**
      * Разбирает данные JSON.
      * @param jsonObject строка данных в формате JSON.
      * @return возвращает список разобранных данных.
      */
-    public static ArrayList<QueryResult> parseData(JSONObject jsonObject){
+    public ArrayList<QueryResult> parseData(JSONObject jsonObject){
         Log.d("testApp", "Парсинг данных.");
         ArrayList<QueryResult> list = new ArrayList<>();
         JSONArray array = null;
         try {
             array = jsonObject.getJSONArray("items");
+            Log.d("testApp", "Создан массив.");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -33,6 +49,7 @@ public class JsonHandler {
             JSONObject object = null;
             try {
                 object = (JSONObject)array.get(i);
+                Log.d("testApp", "Извлечен объект.");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -45,11 +62,45 @@ public class JsonHandler {
                 list.add(new QueryResult(object.getString("title"),
                                          object.getInt("answer_count"),
                                          new Date(object.getLong("creation_date"))));
+                Log.d("testApp", "Создан результат.");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
         return list;
+    }
+
+    @Override
+    protected ArrayList<QueryResult> doInBackground(URL... params) {
+        StringBuilder response = new StringBuilder();
+        try {
+            URLConnection connection = params[0].openConnection();
+            InputStream inputStream = connection.getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            char[] buffer = new char[256];
+            int readChars;
+            while ((readChars = inputStreamReader.read(buffer)) != -1){
+                response.append(buffer, 0, readChars);
+            }
+            inputStreamReader.close();
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
+        try {
+            return response == null ? null : this.parseData(new JSONObject(String.valueOf(response)));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    protected void onPostExecute(ArrayList<QueryResult> queryResults) {
+        super.onPostExecute(queryResults);
+        ListAdapter listAdapter = new ListAdapter(this.view.getContext(), queryResults);
+        this.view.setAdapter(listAdapter);
     }
 }

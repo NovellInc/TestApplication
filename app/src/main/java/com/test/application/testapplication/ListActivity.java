@@ -43,22 +43,17 @@ public class ListActivity extends AppCompatActivity {
             }
         });
 
-        // TODO : Запилить запрос к stackoverflow
-        SearchView searchView = (SearchView) findViewById(R.id.svQuery);
+        final SearchView searchView = (SearchView) findViewById(R.id.svQuery);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 try {
-                    URL url = new URL("https://api.stackexchange.com//2.2/search/advanced?order=desc&sort=activity&body="+query+"&title="+query+"&site=stackoverflow");
-                    JSONObject response = new JSONObject(ListActivity.RequestSender(url));
-                    ArrayList<QueryResult> queryResults = JsonHandler.parseData(response);
-                    ListAdapter listAdapter = new ListAdapter(this, queryResults);
                     ListView listView = (ListView)findViewById(R.id.lvResultList);
-                    listView.setAdapter(listAdapter);
+                    URL url = new URL("https://api.stackexchange.com//2.2/search/advanced?order=desc&sort=activity&body="+query+"&title="+query+"&site=stackoverflow");
+                    JsonHandler handler = new JsonHandler(listView);
+                    handler.execute(url);
                     Log.d("testApp", "Пульнул запрос \""+query+"\".");
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return false;
@@ -98,7 +93,7 @@ public class ListActivity extends AppCompatActivity {
      * @param url Строка запроса.
      * @return Строка ответа.
      */
-    public static String RequestSender(URL url){
+    public static String RequestSender(View view, URL url) throws Exception {
         StringBuilder response = null;
         try {
             URLConnection connection = url.openConnection();
@@ -110,12 +105,12 @@ public class ListActivity extends AppCompatActivity {
                 response.append(buffer, 0, readChars);
             }
             inputStreamReader.close();
-        } catch (IOException e) {
-            Snackbar.make(this.getCurrentFocus(), "Connection error", Snackbar.LENGTH_LONG)
+        } catch (Exception e){
+            e.printStackTrace();
+            Snackbar.make(view, "Connection error", Snackbar.LENGTH_LONG)
                     .setAction("Action", null)
                     .show();
-            Log.d("testApp", "При выполнении запроса произошла ошибка: " + e);
-            return null;
+            throw e;
         }
 
         return response.toString();

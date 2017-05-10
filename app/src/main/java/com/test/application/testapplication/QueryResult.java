@@ -9,26 +9,31 @@ import java.util.Date;
  * Класс представляет информацию о результате запроса.
  */
 public class QueryResult {
-    private String Title;
-    private int AnswersCount;
-    private String AddedTime;
+    private String title;
+    private int answersCount;
+    private String addedTime;
+    private String link;
 
-    public QueryResult(String title, int answersCount, Date addedDate) {
+    public QueryResult(String title, int answersCount, Date addedDate, String link) {
         Log.d("testApp", "Конструктор экземпляра QueryResult.");
-        Title = title;
-        AnswersCount = answersCount;
-        AddedTime = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(addedDate);
+        this.title = title;
+        this.answersCount = answersCount;
+        this.addedTime = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy").format(addedDate);
+        this.link = link;
     }
 
+
     public String getTitle() {
-        return Title;
+        return title;
     }
 
     public int getAnswersCount() {
-        return AnswersCount;
+        return answersCount;
     }
 
     public String getAddedTime() {
-        return AddedTime;
+        return addedTime;
     }
+
+    public String getLink() { return link; }
 }

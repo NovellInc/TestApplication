@@ -33,15 +33,15 @@ public class ListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .show();
-            }
-        });
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null)
+//                        .show();
+//            }
+//        });
 
         final SearchView searchView = (SearchView) findViewById(R.id.svQuery);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -52,7 +52,6 @@ public class ListActivity extends AppCompatActivity {
                     URL url = new URL("https://api.stackexchange.com//2.2/search/advanced?order=desc&sort=activity&body="+query+"&title="+query+"&site=stackoverflow");
                     JsonHandler handler = new JsonHandler(listView);
                     handler.execute(url);
-                    Log.d("testApp", "Пульнул запрос \""+query+"\".");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

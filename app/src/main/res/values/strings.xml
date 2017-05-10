@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">TestApplication</string>
-    <string name="action_settings">Settings</string>
+    <string name="mi_favorites">Favorites</string>
+    <string name="svQuery_hint">Input query here...</string>
+    <string name="tvAnswers_text">answers:</string>
+    <string name="tvAdded_text">added:</string>
 </resources>

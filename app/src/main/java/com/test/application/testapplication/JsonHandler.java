@@ -61,7 +61,8 @@ public class JsonHandler extends AsyncTask<URL, Void, ArrayList<QueryResult>> {
             try {
                 list.add(new QueryResult(object.getString("title"),
                                          object.getInt("answer_count"),
-                                         new Date(object.getLong("creation_date"))));
+                                         new Date(object.getLong("creation_date")),
+                                         object.getString("link")));
                 Log.d("testApp", "Создан результат.");
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -71,8 +72,14 @@ public class JsonHandler extends AsyncTask<URL, Void, ArrayList<QueryResult>> {
         return list;
     }
 
+    /**
+     * Выполняет запрос.
+     * @param params Параметры запроса.
+     * @return Возвращает результат выполнения запроса.
+     */
     @Override
     protected ArrayList<QueryResult> doInBackground(URL... params) {
+        Log.d("testApp", "Начало выполнения запроса.");
         StringBuilder response = new StringBuilder();
         try {
             URLConnection connection = params[0].openConnection();
@@ -84,22 +91,36 @@ public class JsonHandler extends AsyncTask<URL, Void, ArrayList<QueryResult>> {
                 response.append(buffer, 0, readChars);
             }
             inputStreamReader.close();
+            Log.d("testApp", "Запрос выполнен.");
         } catch (Exception e){
             e.printStackTrace();
             return null;
         }
 
         try {
-            return response == null ? null : this.parseData(new JSONObject(String.valueOf(response)));
+            return response == null
+                    ? null
+                    : this.parseData(new JSONObject(String.valueOf(response)));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
+    /**
+     * Пост-обработка запроса.
+     * @param queryResults Результат парсинга ответа.
+     */
     @Override
     protected void onPostExecute(ArrayList<QueryResult> queryResults) {
         super.onPostExecute(queryResults);
+
+        if (queryResults == null){
+            Snackbar.make(view, "Error occurred.", Snackbar.LENGTH_LONG)
+                    .show();
+            return;
+        }
+
         ListAdapter listAdapter = new ListAdapter(this.view.getContext(), queryResults);
         this.view.setAdapter(listAdapter);
     }

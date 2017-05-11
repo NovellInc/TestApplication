@@ -7,4 +7,19 @@
         android:orderInCategory="100"
         android:title="@string/mi_favorites"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/mi_add_to_favorites"
+        android:orderInCategory="100"
+        android:title="@string/mi_add_to_favorites"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/mi_delete_from_favorites"
+        android:orderInCategory="100"
+        android:title="@string/mi_delete_from_favorites"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/mi_clear_favorites"
+        android:orderInCategory="100"
+        android:title="@string/mi_clear_favorites"
+        app:showAsAction="never" />
 </menu>

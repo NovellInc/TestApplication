@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">TestApplication</string>
     <string name="mi_favorites">Favorites</string>
+    <string name="mi_add_to_favorites">Add to Favorites</string>
+    <string name="mi_delete_from_favorites">Delete from Favorites</string>
+    <string name="mi_clear_favorites">Clear Favorites</string>
     <string name="svQuery_hint">Input query here...</string>
     <string name="tvAnswers_text">answers:</string>
     <string name="tvAdded_text">added:</string>

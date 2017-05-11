@@ -22,6 +22,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".DetailsActivity"
+            android:label="Detailed Info"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".FavoritesActivity"
+            android:label="Favorites List"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

@@ -14,6 +14,14 @@ public class QueryResult {
     private String addedTime;
     private String link;
 
+    public QueryResult(String title, int answersCount, String addedDate, String link) {
+        Log.d("testApp", "Конструктор экземпляра QueryResult.");
+        this.title = title;
+        this.answersCount = answersCount;
+        this.addedTime = addedDate;
+        this.link = link;
+    }
+
     public QueryResult(String title, int answersCount, Date addedDate, String link) {
         Log.d("testApp", "Конструктор экземпляра QueryResult.");
         this.title = title;
@@ -36,4 +44,20 @@ public class QueryResult {
     }
 
     public String getLink() { return link; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        QueryResult that = (QueryResult) o;
+
+        return link.equals(that.link);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return link.hashCode();
+    }
 }

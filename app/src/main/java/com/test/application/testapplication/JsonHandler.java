@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
+import com.google.gson.Gson;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,7 +63,7 @@ public class JsonHandler extends AsyncTask<URL, Void, ArrayList<QueryResult>> {
             try {
                 list.add(new QueryResult(object.getString("title"),
                                          object.getInt("answer_count"),
-                                         new Date(object.getLong("creation_date")),
+                                         new Date(object.getLong("creation_date") * 1000),
                                          object.getString("link")));
                 Log.d("testApp", "Создан результат.");
             } catch (JSONException e) {
@@ -115,6 +117,10 @@ public class JsonHandler extends AsyncTask<URL, Void, ArrayList<QueryResult>> {
     protected void onPostExecute(ArrayList<QueryResult> queryResults) {
         super.onPostExecute(queryResults);
 
+        this.UpdateView(queryResults);
+    }
+
+    public void UpdateView(ArrayList<QueryResult> queryResults){
         if (queryResults == null){
             Snackbar.make(view, "Error occurred.", Snackbar.LENGTH_LONG)
                     .show();
@@ -123,5 +129,15 @@ public class JsonHandler extends AsyncTask<URL, Void, ArrayList<QueryResult>> {
 
         ListAdapter listAdapter = new ListAdapter(this.view.getContext(), queryResults);
         this.view.setAdapter(listAdapter);
+    }
+
+    public static QueryResult FromJson(String json){
+        Gson gson = new Gson();
+        return gson.fromJson(json, QueryResult.class);
+    }
+
+    public static String ToJson(QueryResult queryResult){
+        Gson gson = new Gson();
+        return gson.toJson(queryResult);
     }
 }

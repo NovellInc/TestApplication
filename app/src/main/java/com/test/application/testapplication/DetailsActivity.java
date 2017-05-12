@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.webkit.WebView;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Экран детальной информации.
@@ -39,19 +38,14 @@ public class DetailsActivity extends AppCompatActivity {
         link = getIntent().getExtras().getString("link");
         queryResult = JsonHandler.FromJson(link);
 
-        Favorites = getSharedPreferences(FAVORITES, this.MODE_PRIVATE);
-        Collection<?> favoritesCollection = Favorites.getAll().values();
-        for (Object item: favoritesCollection) {
-            try {
-                favoritesList.add(JsonHandler.FromJson((String) item));
-            } catch (Exception e) {
-                e.printStackTrace();
-                continue;
-            }
-        }
-
         WebView webView = (WebView)findViewById(R.id.wvPage);
         webView.loadUrl(queryResult.getLink());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.UpdateMenuItems();
     }
 
     private MenuItem favorites;
@@ -68,16 +62,39 @@ public class DetailsActivity extends AppCompatActivity {
         favoritesDelete = menu.findItem(R.id.mi_delete_from_favorites);
         favoritesAdd.setEnabled(true);
 
+        this.UpdateMenuItems();
+
+        return true;
+    }
+
+    /**
+     * Обновление полей меню.
+     */
+    private void UpdateMenuItems(){
+        if (favorites == null && favoritesDelete == null){
+            return;
+        }
+
+        favoritesList.clear();
+        Favorites = getSharedPreferences(FAVORITES, this.MODE_PRIVATE);
+        for (Object item: Favorites.getAll().values()) {
+            try {
+                favoritesList.add(JsonHandler.FromJson((String) item));
+            } catch (Exception e) {
+                e.printStackTrace();
+                continue;
+            }
+        }
+
         if (favoritesList.size() != 0){
             favorites.setTitle(getString(R.string.mi_favorites) + "(" + favoritesList.size() + ")");
             favorites.setEnabled(true);
             favoritesDelete.setEnabled(true);
         } else {
+            favorites.setTitle(getString(R.string.mi_favorites) + "(" + favoritesList.size() + ")");
             favorites.setEnabled(false);
             favoritesDelete.setEnabled(false);
         }
-
-        return true;
     }
 
     @Override
@@ -128,4 +145,5 @@ public class DetailsActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }

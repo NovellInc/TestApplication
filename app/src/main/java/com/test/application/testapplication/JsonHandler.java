@@ -26,6 +26,7 @@ import java.util.Date;
 public class JsonHandler extends AsyncTask<URL, Void, ArrayList<QueryResult>> {
 
     private ListView view;
+    private ListAdapter listAdapter;
 
     public JsonHandler(ListView view) {
         this.view = view;
@@ -127,7 +128,7 @@ public class JsonHandler extends AsyncTask<URL, Void, ArrayList<QueryResult>> {
             return;
         }
 
-        ListAdapter listAdapter = new ListAdapter(this.view.getContext(), queryResults);
+        listAdapter = new ListAdapter(this.view.getContext(), queryResults);
         this.view.setAdapter(listAdapter);
     }
 

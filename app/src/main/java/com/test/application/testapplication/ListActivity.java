@@ -29,10 +29,9 @@ import java.util.ArrayList;
 public class ListActivity extends AppCompatActivity {
 
     private ArrayList<QueryResult> favoritesList = new ArrayList<>();
-
     public static final String FAVORITES = "favorites_list";
-
     SharedPreferences Favorites;
+    private JsonHandler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,18 +41,9 @@ public class ListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Favorites = getSharedPreferences(FAVORITES, this.MODE_PRIVATE);
-        for (Object item: Favorites.getAll().values()) {
-            try {
-                favoritesList.add(JsonHandler.FromJson((String) item));
-            } catch (Exception e) {
-                e.printStackTrace();
-                continue;
-            }
-        }
-
         final SearchView searchView = (SearchView) findViewById(R.id.svQuery);
         final ListView listView = (ListView)findViewById(R.id.lvResultList);
+        handler = new JsonHandler(listView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -68,7 +58,6 @@ public class ListActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 try {
                     URL url = new URL("https://api.stackexchange.com//2.2/search/advanced?order=desc&sort=activity&body="+query+"&title="+query+"&site=stackoverflow");
-                    JsonHandler handler = new JsonHandler(listView);
                     handler.execute(url);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -81,6 +70,12 @@ public class ListActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        this.UpdateMenuItems();
     }
 
     private MenuItem favorites;
@@ -98,14 +93,37 @@ public class ListActivity extends AppCompatActivity {
         favoritesAdd.setEnabled(false);
         favoritesDelete.setEnabled(false);
 
+        this.UpdateMenuItems();
+
+        return true;
+    }
+
+    /**
+     * Обновление полей меню.
+     */
+    private void UpdateMenuItems(){
+        if (favorites == null){
+            return;
+        }
+
+        favoritesList.clear();
+        Favorites = getSharedPreferences(FAVORITES, this.MODE_PRIVATE);
+        for (Object item: Favorites.getAll().values()) {
+            try {
+                favoritesList.add(JsonHandler.FromJson((String) item));
+            } catch (Exception e) {
+                e.printStackTrace();
+                continue;
+            }
+        }
+
         if (favoritesList.size() != 0){
             favorites.setTitle(getString(R.string.mi_favorites) + "(" + favoritesList.size() + ")");
             favorites.setEnabled(true);
         } else {
+            favorites.setTitle(getString(R.string.mi_favorites) + "(" + favoritesList.size() + ")");
             favorites.setEnabled(false);
         }
-
-        return true;
     }
 
     @Override
@@ -130,4 +148,25 @@ public class ListActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+//    @Override
+//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+//        super.onRestoreInstanceState(savedInstanceState);
+//        ArrayList<CharSequence> bundleFavorites = savedInstanceState.getCharSequenceArrayList(FAVORITES);
+//        for (CharSequence s : bundleFavorites){
+//            favoritesList.add(handler.FromJson(s.toString()));
+//        }
+//        handler.UpdateView(favoritesList);
+//    }
+//
+//    @Override
+//    protected void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//        ArrayList<CharSequence> bundleFavorites = new ArrayList<>();
+//        for (QueryResult result : favoritesList){
+//            bundleFavorites.add(handler.ToJson(result));
+//        }
+//
+//        outState.putCharSequenceArrayList(FAVORITES, bundleFavorites);
+//    }
 }
